@@ -1,16 +1,16 @@
 defmodule BatchReporter do
   use GenServer
 
-  @max_events 1000
-
-  defstruct [:report_fn, :max_events, report_scheduled: false, unreported_events: []]
+  defmodule State do
+    defstruct [:report_fn, :max_events, report_scheduled: false, unreported_events: []]
+  end
 
   def start_link(opts) do
     {report_fn, opts} = Keyword.pop(opts, :report_fn, &do_report_events/1)
-    {max_events, opts} = Keyword.pop(opts, :max_events, @max_events)
+    {max_events, opts} = Keyword.pop(opts, :max_events, 1000)
 
     state =
-      %__MODULE__{}
+      %State{}
       |> Map.put(:report_fn, report_fn)
       |> Map.put(:max_events, max_events)
 

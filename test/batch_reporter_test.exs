@@ -6,7 +6,7 @@ defmodule BatchReporterTest do
     test_pid = self()
 
     report_fn = fn events ->
-      IO.inspect({:reported, events})
+      IO.inspect({:reported, events, length(events)})
 
       Enum.each(events, fn event ->
         send(test_pid, {:reported, event})
@@ -17,7 +17,7 @@ defmodule BatchReporterTest do
       Process.sleep(100 * length(events))
     end
 
-    {:ok, pid} = BatchReporter.start_link(report_fn: report_fn, max_events: 5, name: :yolo)
+    {:ok, pid} = BatchReporter.start_link(report_fn: report_fn, max_events: 100, name: :yolo)
 
     Enum.each(1..100, fn event_id ->
       event = %{id: event_id}
